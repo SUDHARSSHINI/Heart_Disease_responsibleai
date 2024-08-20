@@ -3,7 +3,7 @@ pandas==1.5.3
 numpy==1.26.2
 scikit-learn==1.2.0
 responsibleai==0.9.1
-dice-ml==0.11
+dice-ml>=0.6.1,<0.7
 econml==0.12.0b4
 statsmodels==0.13.5
 interpret-community==0.31.0
