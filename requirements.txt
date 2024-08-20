@@ -1,5 +1,6 @@
 streamlit==1.21.0
-pandas==2.1.0
+pandas==1.5.3
+
 numpy==1.26.2
 scikit-learn==1.2.0
 responsibleai==0.9.1
