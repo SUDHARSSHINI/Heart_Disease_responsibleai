@@ -1,6 +1,10 @@
+streamlit>=1.0.0
 pandas
 numpy
 scikit-learn
-streamlit
 responsibleai
-aif360
+dice-ml
+econml
+statsmodels
+interpret-community
+lightgbm
