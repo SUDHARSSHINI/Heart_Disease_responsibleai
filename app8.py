@@ -9,27 +9,29 @@ from responsibleai import RAIInsights, FeatureMetadata
 from aif360.datasets import BinaryLabelDataset
 from aif360.metrics import ClassificationMetric
 import streamlit as st
+import os
 
 # Load the synthetic dataset
 csv_file_path = 'heart_disease_prediction.csv'
-data = pd.read_csv(csv_file_path)
+
+if os.path.isfile(csv_file_path):
+    data = pd.read_csv(csv_file_path)
+else:
+    st.error("CSV file not found.")
+    st.stop()
 
 # Prepare the dataset
 X = data.drop(columns=['Heart Disease'])
 y = data['Heart Disease']
-
-# Ensure 'Heart Disease' column is numeric
 y = y.astype(int)
 
 # Define categorical features
 categorical_features = ['Sex']
-
-# Convert categorical columns to string if they are not already
 X[categorical_features] = X[categorical_features].astype(str)
 
 # Check and handle missing values
 X = X.dropna()
-y = y[X.index]  # Align y with the cleaned X
+y = y[X.index]
 
 # Create a column transformer to preprocess the data
 preprocessor = ColumnTransformer(
@@ -53,7 +55,6 @@ pipeline.fit(X_train, y_train)
 
 # Define a function to predict heart disease
 def predict_heart_disease(age, sex, cholesterol, blood_pressure):
-    # Create DataFrame for new input
     new_data = pd.DataFrame({
         'Age': [age],
         'Sex': [sex],
@@ -61,30 +62,24 @@ def predict_heart_disease(age, sex, cholesterol, blood_pressure):
         'Blood Pressure': [blood_pressure]
     })
     new_data['Sex'] = new_data['Sex'].astype(str)
-
-    # Predict using the fitted pipeline
-    prediction = pipeline.predict(new_data)
-
-    # Return the prediction result
+    try:
+        prediction = pipeline.predict(new_data)
+    except Exception as e:
+        st.error(f"Prediction error: {e}")
+        return None
     return "Heart Disease" if prediction[0] == 1 else "No Heart Disease"
 
 # Initialize Responsible AI insights
 def initialize_rai_insights():
     test_df = pd.concat([pd.DataFrame(X_test), pd.Series(y_test, name='Heart Disease')], axis=1)
-    
-    # Convert to AIF360 dataset format
     test_data_aif360 = BinaryLabelDataset(
         df=test_df,
         label_names=['Heart Disease'],
         protected_attribute_names=['Sex']
     )
-    
-    # Initialize FeatureMetadata
     feature_metadata = FeatureMetadata(
         categorical_features=['Sex']
     )
-    
-    # Initialize RAIInsights
     rai_insights = RAIInsights(
         model=pipeline,
         train=pd.concat([pd.DataFrame(X_train), pd.Series(y_train, name='Heart Disease')], axis=1),
@@ -93,16 +88,11 @@ def initialize_rai_insights():
         task_type='classification',
         feature_metadata=feature_metadata
     )
-    
-    # Add components
     rai_insights.explainer.add()
     rai_insights.error_analysis.add()
     rai_insights.counterfactual.add(total_CFs=10, desired_class='opposite')
     rai_insights.causal.add(treatment_features=['Cholesterol', 'Blood Pressure'])
-    
-    # Compute insights
     rai_insights.compute()
-    
     return rai_insights, test_data_aif360
 
 # Initialize RAI insights
@@ -119,11 +109,11 @@ def app():
     
     if st.button('Predict'):
         prediction = predict_heart_disease(age, sex, cholesterol, blood_pressure)
-        st.write("Prediction Result:", prediction)
+        if prediction:
+            st.write("Prediction Result:", prediction)
 
     st.header("Responsible AI Insights")
     
-    # Fairness Metrics
     st.subheader("Fairness Metrics")
     metric = ClassificationMetric(test_data_aif360, rai_insights.counterfactual.get(), privileged_groups=[{'Sex': 1}], unprivileged_groups=[{'Sex': 0}])
     st.write("Disparate Impact:", metric.disparate_impact())
@@ -131,7 +121,6 @@ def app():
     st.write("Equal Opportunity Difference:", metric.equal_opportunity_difference())
     st.write("Average Odds Difference:", metric.average_odds_difference())
     
-    # RAI Insights Components
     st.subheader("Explainer Insights")
     st.write(rai_insights.explainer.get())
     
