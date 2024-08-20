@@ -4,5 +4,5 @@ scikit-learn
 responsibleai
 aif360
 streamlit
-numba
-llvmlite
+numba==0.60.0
+llvmlite==0.43.0
