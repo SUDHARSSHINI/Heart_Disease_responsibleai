@@ -1,7 +1,7 @@
 pandas==1.5.3
 numpy==1.26.2
 scikit-learn==1.5.1
-scipy==1.5.4
+scipy==1.6.0
 responsibleai==0.36.0
 aif360==0.4.0
 streamlit==1.37.1
