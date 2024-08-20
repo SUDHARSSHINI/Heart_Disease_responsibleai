@@ -1,6 +1,3 @@
-!pip install -r requirements.txt
-!pip install streamlit==1.21.0 pandas==1.5.3 numpy==1.26.2 scikit-learn==1.3.0 responsibleai==0.9.1 dice-ml==0.6.1 econml==0.12.0b4 statsmodels==0.13.5 interpret-community==0.31.0 lightgbm==4.5.0 aif360==0.4.0
-
 import pandas as pd
 import numpy as np
 from sklearn.model_selection import train_test_split
