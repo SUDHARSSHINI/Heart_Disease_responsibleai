@@ -10,4 +10,4 @@ econml==0.15.1
 interpret-community==0.31.0
 lightgbm==4.5.0
 statsmodels==0.13.5
-llvmlite==0.40.0  # Adjusted version
+llvmlite==0.41.1  # Adjusted version
