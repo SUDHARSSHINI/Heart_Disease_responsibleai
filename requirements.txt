@@ -5,4 +5,4 @@ responsibleai==0.36.0
 aif360==0.4.0
 streamlit==1.37.1
 numba==0.58.1
-llvmlite==0.41.1
+llvmlite==0.39.1
