@@ -9,5 +9,5 @@ interpret-community==0.31.0
 lightgbm==4.5.0
 aif360==0.4.0
 streamlit==1.37.1
-numba==0.60.0
-llvmlite==0.43.0
+numba==0.58.1
+llvmlite==0.41.1
